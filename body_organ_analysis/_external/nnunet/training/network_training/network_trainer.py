@@ -21,7 +21,8 @@ from batchgenerators.utilities.file_and_folder_operations import *
 from nnunet.network_architecture.neural_network import SegmentationNetwork
 from sklearn.model_selection import KFold
 from torch import nn
-from torch.cuda.amp import GradScaler, autocast
+#from torch.cuda.amp import GradScaler, autocast
+from torch.amp import GradScaler, autocast
 from torch.optim.lr_scheduler import _LRScheduler
 
 matplotlib.use("agg")
@@ -755,7 +756,7 @@ class NetworkTrainer(object):
         self.optimizer.zero_grad()
 
         if self.fp16:
-            with autocast():
+            with autocast(device_type='cuda'):
                 output = self.network(data)
                 del data
                 l = self.loss(output, target)

@@ -22,7 +22,8 @@ import torch
 from scipy.ndimage.filters import gaussian_filter
 from typing import Union, Tuple, List
 
-from torch.cuda.amp import autocast
+#from torch.cuda.amp import autocast
+from torch.amp import autocast
 
 
 class NeuralNetwork(nn.Module):
@@ -155,7 +156,7 @@ class SegmentationNetwork(NeuralNetwork):
         else:
             context = no_op
 
-        with context():
+        with context(device_type='cuda'):
             with torch.no_grad():
                 if self.conv_op == nn.Conv3d:
                     if use_sliding_window:
