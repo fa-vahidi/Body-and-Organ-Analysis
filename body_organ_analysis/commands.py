@@ -33,6 +33,7 @@ def analyze_ct(
     processed_output_folder: Path,
     excel_output_folder: Path,
     models: List[str],
+    excel_output_filename: str = "output",
     compute_contrast_information: bool = True,
     total_preview: bool = True,
     nr_thr_resamp: int = 1,
@@ -80,6 +81,7 @@ def analyze_ct(
         test=0,
         crop_path=None,
     )
+    
     ct_stats = compute_all_models(
         ct_path=ct_path,
         segmentation_folder=seg_output,
@@ -167,7 +169,10 @@ def analyze_ct(
 
     info_df = pd.DataFrame(ct_info).set_index("name")
 
-    excel_path = excel_output_folder / "output.xlsx"
+    if not excel_output_filename.lower().endswith(".xlsx"):
+        excel_output_filename += ".xlsx"
+
+    excel_path = excel_output_folder / excel_output_filename
 
     start = time()
     with pd.ExcelWriter(excel_path, engine="xlsxwriter") as writer:
@@ -186,6 +191,9 @@ def analyze_ct(
             )
         if bmd_df is not None:
             bmd_df.to_excel(writer, sheet_name="bmd", index=False)
+            
+    print("   + Excel file has been created!")
+    
     logger.info(f"Excel stored: DONE in {time() - start:0.5f}s")
     stats["excel_time"] = time() - start
     logger.info(f"Complete CT analysis: DONE in {time() - start_total:0.5f}s")
